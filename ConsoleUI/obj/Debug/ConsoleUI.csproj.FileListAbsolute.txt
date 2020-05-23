@@ -1,0 +1,10 @@
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\bin\Debug\ConsoleUI.exe.config
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\bin\Debug\ConsoleUI.exe
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\bin\Debug\ConsoleUI.pdb
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\bin\Debug\GameLibrary.dll
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\bin\Debug\GameLibrary.pdb
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\obj\Debug\ConsoleUI.csprojAssemblyReference.cache
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\obj\Debug\ConsoleUI.csproj.CoreCompileInputs.cache
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\obj\Debug\ConsoleUI.csproj.CopyComplete
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\obj\Debug\ConsoleUI.exe
+C:\Users\hchoi\Desktop\Projects\Battleship\ConsoleUI\obj\Debug\ConsoleUI.pdb
