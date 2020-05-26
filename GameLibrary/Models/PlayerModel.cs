@@ -11,5 +11,6 @@ namespace GameLibrary.Models
 		public string Name { get; set; }
 		public int[][] DefendField { get; set; }
 		public int[][] AttackField { get; set; }
+		public int TurnsTaken { get; set; }
 	}
 }

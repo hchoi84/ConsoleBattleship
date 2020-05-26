@@ -1,9 +1,8 @@
 ﻿using GameLibrary;
+using GameLibrary.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace ConsoleUI
 {
@@ -11,8 +10,113 @@ namespace ConsoleUI
 	{
 		static void Main(string[] args)
 		{
-			int[][] generatedField = FieldGenerator.GenerateBattleField(5, 5);
-			string field = FieldGenerator.ConvertFieldToString(generatedField);
+			PrintGameRule();
+			GetConfirmation("Press ENTER to start");
+			ClearScreen();
+
+			int numberOfPlayers = 2;
+			int fieldWidth = 5;
+			int fieldHeight = 5;
+
+			List<PlayerModel> players = Player.Initialize(numberOfPlayers, fieldWidth, fieldHeight);
+
+			for (var i = 0; i < players.Count; i++)
+			{
+				players[i].Name = GetPlayerName(i);
+				string[] shipCoordinates = GetShipLocations();
+				Player.PlaceShips(players[i].DefendField, shipCoordinates);
+				ClearScreen();
+			}
+			
+			PrintField(Field.Initialize(fieldWidth, fieldHeight));
+
+			Console.ReadLine();
+		}
+
+		private static void PrintGameRule()
+		{
+			Console.WriteLine("Welcome to Battleship Console!");
+			Console.WriteLine("Here's a quick overview of the game:");
+			Console.WriteLine("This is a 2 player game.");
+			Console.WriteLine("Each player will place 5 ships on a 5 x 5 grid.");
+			Console.WriteLine("Whoever sinks the opponents 5 ships first wins.");
+			Console.WriteLine();
+			Console.WriteLine("Ships aren't stackable. Meaning, you can't place multiple ships on the same coordinate");
+			Console.WriteLine("Player will be able to attack same coordinate more than once. It's a punishment for lack of attention :)");
+			Console.WriteLine("Good luck!");
+		}
+
+		private static void GetConfirmation(string instruction)
+		{
+			bool isConfirmed = false;
+
+			while (!isConfirmed)
+			{
+				Console.WriteLine(instruction);
+
+				if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+				{
+					isConfirmed = true;
+				}
+				else
+				{
+					Console.WriteLine("Invalid entry");
+				}
+			}
+		}
+
+		private static void ClearScreen() => Console.Clear();
+
+		private static string GetPlayerName(int index)
+		{
+			Console.WriteLine($"Player { index + 1 }, please enter your name: (10 characters max)");
+			string name = Console.ReadLine();
+
+			while (name.Length > 10)
+			{
+				Console.WriteLine("Name is too long. Please keep it below 10 characters");
+			}
+
+			return name;
+		}
+
+		private static string[] GetShipLocations()
+		{
+			while (true)
+			{
+				Console.WriteLine();
+				Console.WriteLine("Please enter 5 ship locations separated by a comma (ex: a1,a2,a3,a4,a5)");
+				string[] response = Console.ReadLine().Trim().ToUpper().Replace(" ", "").Split(',');
+
+				while (response.Length != 5)
+				{
+					Console.WriteLine($"You've entered { response.Length } ship coordinates.");
+					Console.WriteLine("Please enter 5 ship locations separated by a comma (ex: a1,a2,a3,a4,a5)");
+					response = Console.ReadLine().Trim().ToUpper().Replace(" ", "").Split(',');
+				}
+
+				bool isValidCoordinate = true;
+
+				foreach (string coordinate in response)
+				{
+					isValidCoordinate = Field.CoordinateValidator(coordinate);
+					if (!isValidCoordinate)
+					{
+						Console.WriteLine($"Coordinate { coordinate } is not valid. Please enter coordinates within the grid");
+						break;
+					}
+				}
+
+				if (isValidCoordinate)
+				{
+					return response;
+				}
+			}
+		}
+
+		private static void PrintField(int[][] generatedField)
+		{
+			string field = Field.ConvertToString(generatedField);
 
 			string[] lines = field.Split('\n');
 
@@ -40,55 +144,6 @@ namespace ConsoleUI
 				}
 				Console.Write("\n");
 			}
-
-			Console.ReadLine();
 		}
 	}
 }
-
-/* WALKTHROUGH
- *	- Display basic game info and rules
- *	- Display the game field (Excel format)
- *		- Letters on the top
- *		- Numbers on the left
- *	- Ask for Player's
- *		- Name
- *		- 5 spots (can't all be the same)
- *	- Clear the screen
- *	- Have player enter "START" when ready
- *	- Each players turn should clear the screen and load up the field with
- *		- Battleships (Blue O)
- *		- Launched spots (Black X)
- *		- Hit spots (Red X)
- *	- Allow player to shoot at the same spot (dumb mistake is allowed)
- *	- When one player loses all 5 ships, GAME OVER
- *	- Displays
- *		- Player 1 Field
- *		- Player 2 Field
- *		- Number of shots taken
- *		- Accuracy
- */
-
-/* QUESTIONS
- *	- Local or LAN? LOCAL
- *	- Allow ships to be placed on the same spot? NO
- *	- Allow more than 2 players? MAYBE (future update)
- *	- Allow computer? MAYBE
- *	- Allow shooting at the same spot? YES
- *	- Display battlefield of the player? YES
- *	- Display stats (shot spots, hit spots, ship spots)? YES
- *	- Enter coordinates at once or separate (Column then Row)? SEPARATE
- *	- Allow ship placement outside of the field? NO
- *	- Allow shooting outside of the field? YES
- */
-
-/* REQUIREMENTS
- *	- 2 People Players
- *	- Show fields with ship, shots, and misses
- *	- One ship per spot WITHIN field
- *	- Multiple shots in one spot is okay. Do notify player
- *	- Shooting outside of the field is okay. Do notify player
- *	- Enter coordinates separately (Column then Row)
- *	- Completely end the game once a player loses all 5 ships
- *	- Display stats screen on GAME OVER screen
- */

@@ -6,30 +6,42 @@ using System.Threading.Tasks;
 
 namespace GameLibrary
 {
-	public static class FieldGenerator
+	public static class Field
 	{
-		public static int[][] GenerateBattleField(int x, int y)
+		public static int[][] Initialize(int x, int y)
 		{
 			x++;
 			y++;
 			int[][] field = new int[x][];
 
-			for (var i = 0; i < x; i++)
+			for (int i = 0; i < field.Length; i++)
 			{
 				field[i] = new int[y];
+				field[i][0] = i + 64;
+			}
 
-				for (var j = 0; j < y; j++)
-				{
-					if			(i == 0)	field[i][j] = j;
-					else if (j == 0)	field[i][j] = i;
-					else							field[i][j] = 0;
-				}
+			for (int i = 0; i < y; i++)
+			{
+				field[0][i] = i;
 			}
 
 			return field;
 		}
 
-		public static string ConvertFieldToString(int[][] field)
+		public static bool CoordinateValidator(string coordinate)
+		{
+			if (coordinate.Length > 2) return false;
+
+			int row = Convert.ToInt32(coordinate[0]);
+			int col = int.Parse(coordinate[1].ToString());
+
+			if ((row >= 65 && row <= 69) &&
+					(col >= 1 && col <= 5)) return true;
+
+			return false;
+		}
+
+		public static string ConvertToString(int[][] field)
 		{
 			string fieldText = "";
 
@@ -47,7 +59,7 @@ namespace GameLibrary
 					}
 					else if (j == 0)
 					{
-						string character = " " + Convert.ToChar(field[i][j] + 64).ToString();
+						string character = " " + Convert.ToChar(field[i][j]).ToString();
 						fieldText += character;
 					}
 				}
