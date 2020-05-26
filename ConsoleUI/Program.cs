@@ -19,18 +19,49 @@ namespace ConsoleUI
 			int fieldHeight = 5;
 
 			List<PlayerModel> players = Player.Initialize(numberOfPlayers, fieldWidth, fieldHeight);
+			int turnIndex = 0;
+			PlayerModel winner = null;
 
 			for (var i = 0; i < players.Count; i++)
 			{
 				players[i].Name = GetPlayerName(i);
 				string[] shipCoordinates = GetShipLocations();
-				Player.PlaceShips(players[i].DefendField, shipCoordinates);
+				Player.PlaceShips(players[i], shipCoordinates);
+				Console.WriteLine();
 				PrintField(players[i].DefendField);
 				GetConfirmation("Press ENTER after review");
 				ClearScreen();
 			}
 
-			PrintField(Field.Initialize(fieldWidth, fieldHeight));
+			while (winner == null)
+			{
+				int playerIndex = turnIndex % players.Count;
+				PlayerModel activePlayer = players[playerIndex];
+				GetConfirmation($"{ activePlayer.Name }, have a seat and press ENTER when ready");
+				ClearScreen();
+
+				PrintField(activePlayer.DefendField);
+				Console.WriteLine();
+				PrintField(activePlayer.AttackField);
+
+				string attackCoordinate = GetAttackCoordinate();
+				PlayerModel opponent = players[(turnIndex + 1) % players.Count];
+				string attackResult = Player.GetAttackResult(activePlayer, opponent, attackCoordinate);
+				Console.WriteLine(attackResult);
+				bool isStillAlive = Player.IsStillAlive(opponent);
+				if (!isStillAlive)
+				{
+					winner = activePlayer;
+					break;
+				}
+
+				GetConfirmation("Press ENTER after review");
+				ClearScreen();
+
+				turnIndex++;
+			}
+
+			Console.WriteLine($"{ winner.Name } is the WINNER!");
 
 			Console.ReadLine();
 		}
@@ -116,38 +147,6 @@ namespace ConsoleUI
 			}
 		}
 
-		//private static void PrintField(int[][] generatedField)
-		//{
-		//	string field = Field.ConvertToString(generatedField);
-
-		//	string[] lines = field.Split('\n');
-
-		//	Console.WriteLine(lines[0]);
-
-		//	for (var i = 1; i < lines.Length; i++)
-		//	{
-		//		for (var j = 0; j < lines[i].Length; j++)
-		//		{
-		//			if (lines[i][j] == '1' || lines[i][j] == '3')
-		//			{
-		//				Console.ForegroundColor = ConsoleColor.Blue;
-		//				Console.Write(lines[i][j]);
-		//			}
-		//			else if (lines[i][j] == '2' || lines[i][j] == '4')
-		//			{
-		//				Console.ForegroundColor = ConsoleColor.Red;
-		//				Console.Write(lines[i][j]);
-		//			}
-		//			else
-		//			{
-		//				Console.Write(lines[i][j]);
-		//			}
-		//			Console.ResetColor();
-		//		}
-		//		Console.Write("\n");
-		//	}
-		//}
-
 		private static void PrintField(int[][] field)
 		{
 			Dictionary<int, string> legend = new Dictionary<int, string>
@@ -182,7 +181,27 @@ namespace ConsoleUI
 
 				Console.WriteLine();
 			}
+
+			Console.WriteLine();
 		}
 
+		private static string GetAttackCoordinate()
+		{
+			Console.WriteLine("Enter coordinate you'd like to attack:");
+			string response = Console.ReadLine().Trim().Replace(" ","").ToUpper();
+			bool isValid = Field.CoordinateValidator(response);
+
+			while (!isValid)
+			{
+				Console.WriteLine("Invalid attack location");
+				Console.WriteLine("Please enter coordinate within the field");
+				response = Console.ReadLine().Trim().Replace(" ", "").ToUpper();
+				isValid = Field.CoordinateValidator(response);
+			}
+			
+			Console.WriteLine();
+
+			return response;
+		}
 	}
 }

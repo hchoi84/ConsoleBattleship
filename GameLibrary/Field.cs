@@ -41,32 +41,5 @@ namespace GameLibrary
 			return false;
 		}
 
-		public static string ConvertToString(int[][] field)
-		{
-			string fieldText = "";
-
-			for (var i = 0; i < field.Length; i++)
-			{
-				for (var j = 0; j < field[i].Length; j++)
-				{
-					if (field[i][j] == 0)
-					{
-						fieldText += "  ";
-					}
-					else if (i == 0)
-					{
-						fieldText += " " + field[i][j];
-					}
-					else if (j == 0)
-					{
-						string character = " " + Convert.ToChar(field[i][j]).ToString();
-						fieldText += character;
-					}
-				}
-				fieldText += "\n";
-			}
-
-			return fieldText;
-		}
 	}
 }

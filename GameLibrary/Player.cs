@@ -25,15 +25,46 @@ namespace GameLibrary
 			return players;
 		}
 
-		public static void PlaceShips(int[][] defendField, string[] shipCoordinates)
+		public static void PlaceShips(PlayerModel player, string[] shipCoordinates)
 		{
 			foreach (string shipCoordinate in shipCoordinates)
 			{
 				int i = Convert.ToInt32(shipCoordinate[0]) % 64;
 				int j = int.Parse(shipCoordinate[1].ToString());
 
-				defendField[i][j] = 1;
+				player.DefendField[i][j] = 1;
+				player.ShipsAlive++;
 			}
+		}
+
+		public static string GetAttackResult(PlayerModel activePlayer, PlayerModel opponent, string attackCoordinate)
+		{
+			int i = Convert.ToInt32(attackCoordinate[0]) % 64;
+			int j = int.Parse(attackCoordinate[1].ToString());
+
+			int attackLocResult = opponent.DefendField[i][j];
+
+			if (attackLocResult == 0)
+			{
+				opponent.DefendField[i][j] = 3;
+				activePlayer.AttackField[i][j] = 3;
+				return $"{ attackCoordinate } was a MISS";
+			}
+			
+			if (attackLocResult == 1)
+			{
+				opponent.DefendField[i][j] = 2;
+				activePlayer.AttackField[i][j] = 4;
+				opponent.ShipsAlive--;
+				return $"{ attackCoordinate } was a HIT";
+			}
+
+			return $"{ attackCoordinate } had no change because it was previously attacked";
+		}
+
+		public static bool IsStillAlive(PlayerModel opponent)
+		{
+			return opponent.ShipsAlive == 0 ? false : true;
 		}
 	}
 }
