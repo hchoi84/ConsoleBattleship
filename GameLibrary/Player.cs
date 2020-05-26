@@ -25,7 +25,7 @@ namespace GameLibrary
 			return players;
 		}
 
-		public static void PlaceShips(PlayerModel player, string[] shipCoordinates)
+		public static void PlaceShips(PlayerModel player, List<string> shipCoordinates)
 		{
 			foreach (string shipCoordinate in shipCoordinates)
 			{

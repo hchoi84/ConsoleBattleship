@@ -3,12 +3,24 @@ using GameLibrary.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 
 namespace ConsoleUI
 {
 	class Program
 	{
 		static void Main(string[] args)
+		{
+			List<PlayerModel> players = InitializeGame();
+
+			PlayerModel winner = PlayGame(players);
+
+			EndGame(winner);
+
+			Console.ReadLine();
+		}
+
+		private static List<PlayerModel> InitializeGame()
 		{
 			PrintGameRule();
 			GetConfirmation("Press ENTER to start");
@@ -19,13 +31,11 @@ namespace ConsoleUI
 			int fieldHeight = 5;
 
 			List<PlayerModel> players = Player.Initialize(numberOfPlayers, fieldWidth, fieldHeight);
-			int turnIndex = 0;
-			PlayerModel winner = null;
 
 			for (var i = 0; i < players.Count; i++)
 			{
 				players[i].Name = GetPlayerName(i);
-				string[] shipCoordinates = GetShipLocations();
+				List<string> shipCoordinates = GetShipCoordinates();
 				Player.PlaceShips(players[i], shipCoordinates);
 				Console.WriteLine();
 				PrintField(players[i].DefendField);
@@ -33,9 +43,28 @@ namespace ConsoleUI
 				ClearScreen();
 			}
 
+			return players;
+		}
+
+		private static void PrintGameRule()
+		{
+			Console.WriteLine("Welcome to Battleship Console!");
+			Console.WriteLine("This is a 2 player game.");
+			Console.WriteLine("Each player will place 5 ships on a 5 x 5 grid.");
+			Console.WriteLine("Whoever sinks the opponents 5 ships first wins.");
+			Console.WriteLine();
+			Console.WriteLine("Ships aren't stackable. Meaning, you can't place multiple ships on the same coordinate");
+			Console.WriteLine("Player will be able to attack same coordinate more than once. It's a punishment for lack of attention :)");
+			Console.WriteLine("Good luck!");
+		}
+
+		private static PlayerModel PlayGame(List<PlayerModel> players)
+		{
+			int playerTurnIndex = 0;
+			PlayerModel winner = null;
 			while (winner == null)
 			{
-				int playerIndex = turnIndex % players.Count;
+				int playerIndex = playerTurnIndex % players.Count;
 				PlayerModel activePlayer = players[playerIndex];
 				GetConfirmation($"{ activePlayer.Name }, have a seat and press ENTER when ready");
 				ClearScreen();
@@ -45,7 +74,7 @@ namespace ConsoleUI
 				PrintField(activePlayer.AttackField);
 
 				string attackCoordinate = GetAttackCoordinate();
-				PlayerModel opponent = players[(turnIndex + 1) % players.Count];
+				PlayerModel opponent = players[(playerTurnIndex + 1) % players.Count];
 				string attackResult = Player.GetAttackResult(activePlayer, opponent, attackCoordinate);
 				Console.WriteLine(attackResult);
 				bool isStillAlive = Player.IsStillAlive(opponent);
@@ -58,25 +87,15 @@ namespace ConsoleUI
 				GetConfirmation("Press ENTER after review");
 				ClearScreen();
 
-				turnIndex++;
+				playerTurnIndex++;
 			}
 
-			Console.WriteLine($"{ winner.Name } is the WINNER!");
-
-			Console.ReadLine();
+			return winner;
 		}
 
-		private static void PrintGameRule()
+		private static void EndGame(PlayerModel winner)
 		{
-			Console.WriteLine("Welcome to Battleship Console!");
-			Console.WriteLine("Here's a quick overview of the game:");
-			Console.WriteLine("This is a 2 player game.");
-			Console.WriteLine("Each player will place 5 ships on a 5 x 5 grid.");
-			Console.WriteLine("Whoever sinks the opponents 5 ships first wins.");
-			Console.WriteLine();
-			Console.WriteLine("Ships aren't stackable. Meaning, you can't place multiple ships on the same coordinate");
-			Console.WriteLine("Player will be able to attack same coordinate more than once. It's a punishment for lack of attention :)");
-			Console.WriteLine("Good luck!");
+			Console.WriteLine($"{ winner.Name } is the WINNER!");
 		}
 
 		private static void GetConfirmation(string instruction)
@@ -113,34 +132,40 @@ namespace ConsoleUI
 			return name;
 		}
 
-		private static string[] GetShipLocations()
+		private static List<string> GetShipCoordinates()
 		{
 			while (true)
 			{
 				Console.WriteLine();
 				Console.WriteLine("Please enter 5 ship locations separated by a comma (ex: a1,a2,a3,a4,a5)");
-				string[] response = Console.ReadLine().Trim().ToUpper().Replace(" ", "").Split(',');
+				List<string> response = Console.ReadLine().Trim().ToUpper().Replace(" ", "").Split(',').ToList();
 
-				while (response.Length != 5)
+				while (response.Count != 5)
 				{
-					Console.WriteLine($"You've entered { response.Length } ship coordinates.");
+					Console.WriteLine($"You've entered { response.Count } ship coordinates.");
 					Console.WriteLine("Please enter 5 ship locations separated by a comma (ex: a1,a2,a3,a4,a5)");
-					response = Console.ReadLine().Trim().ToUpper().Replace(" ", "").Split(',');
+					response = Console.ReadLine().Trim().ToUpper().Replace(" ", "").Split(',').ToList();
 				}
 
-				bool isValidCoordinate = true;
+				if (response.Count != response.Distinct().Count())
+				{
+					Console.WriteLine("Can't have stacking ships");
+					continue;
+				}
+
+				bool isValidCoordinates = true;
 
 				foreach (string coordinate in response)
 				{
-					isValidCoordinate = Field.CoordinateValidator(coordinate);
-					if (!isValidCoordinate)
+					isValidCoordinates = Field.CoordinateValidator(coordinate);
+					if (!isValidCoordinates)
 					{
 						Console.WriteLine($"Coordinate { coordinate } is not valid. Please enter coordinates within the grid");
 						break;
 					}
 				}
 
-				if (isValidCoordinate)
+				if (isValidCoordinates)
 				{
 					return response;
 				}
