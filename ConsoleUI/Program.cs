@@ -25,9 +25,11 @@ namespace ConsoleUI
 				players[i].Name = GetPlayerName(i);
 				string[] shipCoordinates = GetShipLocations();
 				Player.PlaceShips(players[i].DefendField, shipCoordinates);
+				PrintField(players[i].DefendField);
+				GetConfirmation("Press ENTER after review");
 				ClearScreen();
 			}
-			
+
 			PrintField(Field.Initialize(fieldWidth, fieldHeight));
 
 			Console.ReadLine();
@@ -114,36 +116,73 @@ namespace ConsoleUI
 			}
 		}
 
-		private static void PrintField(int[][] generatedField)
+		//private static void PrintField(int[][] generatedField)
+		//{
+		//	string field = Field.ConvertToString(generatedField);
+
+		//	string[] lines = field.Split('\n');
+
+		//	Console.WriteLine(lines[0]);
+
+		//	for (var i = 1; i < lines.Length; i++)
+		//	{
+		//		for (var j = 0; j < lines[i].Length; j++)
+		//		{
+		//			if (lines[i][j] == '1' || lines[i][j] == '3')
+		//			{
+		//				Console.ForegroundColor = ConsoleColor.Blue;
+		//				Console.Write(lines[i][j]);
+		//			}
+		//			else if (lines[i][j] == '2' || lines[i][j] == '4')
+		//			{
+		//				Console.ForegroundColor = ConsoleColor.Red;
+		//				Console.Write(lines[i][j]);
+		//			}
+		//			else
+		//			{
+		//				Console.Write(lines[i][j]);
+		//			}
+		//			Console.ResetColor();
+		//		}
+		//		Console.Write("\n");
+		//	}
+		//}
+
+		private static void PrintField(int[][] field)
 		{
-			string field = Field.ConvertToString(generatedField);
-
-			string[] lines = field.Split('\n');
-
-			Console.WriteLine(lines[0]);
-
-			for (var i = 1; i < lines.Length; i++)
+			Dictionary<int, string> legend = new Dictionary<int, string>
 			{
-				for (var j = 0; j < lines[i].Length; j++)
+				{ 0, " " }, { 1, "O" },{ 2, "O" },{ 3, "X" },{ 4, "X" },
+			};
+
+			for (var i = 0; i < field.Length; i++)
+			{
+				for (var j = 0; j < field[i].Length; j++)
 				{
-					if (lines[i][j] == '1' || lines[i][j] == '3')
+					if (i == 0)
 					{
-						Console.ForegroundColor = ConsoleColor.Blue;
-						Console.Write(lines[i][j]);
+						Console.Write(field[i][j]);
+						continue;
 					}
-					else if (lines[i][j] == '2' || lines[i][j] == '4')
+
+					if (j == 0)
+					{
+						Console.Write(Convert.ToChar(field[i][j]));
+						continue;
+					}
+
+					if (field[i][j] == 2 || field[i][j] == 4)
 					{
 						Console.ForegroundColor = ConsoleColor.Red;
-						Console.Write(lines[i][j]);
 					}
-					else
-					{
-						Console.Write(lines[i][j]);
-					}
+
+					Console.Write(legend[field[i][j]]);
 					Console.ResetColor();
 				}
-				Console.Write("\n");
+
+				Console.WriteLine();
 			}
 		}
+
 	}
 }

@@ -27,7 +27,13 @@ namespace GameLibrary
 
 		public static void PlaceShips(int[][] defendField, string[] shipCoordinates)
 		{
-			throw new NotImplementedException();
+			foreach (string shipCoordinate in shipCoordinates)
+			{
+				int i = Convert.ToInt32(shipCoordinate[0]) % 64;
+				int j = int.Parse(shipCoordinate[1].ToString());
+
+				defendField[i][j] = 1;
+			}
 		}
 	}
 }

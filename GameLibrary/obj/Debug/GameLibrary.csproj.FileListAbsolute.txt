@@ -1,6 +1,0 @@
-C:\Users\hchoi\Desktop\Projects\Battleship\GameLibrary\bin\Debug\GameLibrary.dll
-C:\Users\hchoi\Desktop\Projects\Battleship\GameLibrary\bin\Debug\GameLibrary.pdb
-C:\Users\hchoi\Desktop\Projects\Battleship\GameLibrary\obj\Debug\GameLibrary.csprojAssemblyReference.cache
-C:\Users\hchoi\Desktop\Projects\Battleship\GameLibrary\obj\Debug\GameLibrary.csproj.CoreCompileInputs.cache
-C:\Users\hchoi\Desktop\Projects\Battleship\GameLibrary\obj\Debug\GameLibrary.dll
-C:\Users\hchoi\Desktop\Projects\Battleship\GameLibrary\obj\Debug\GameLibrary.pdb
